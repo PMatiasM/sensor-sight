@@ -16,9 +16,9 @@ export default function Sidebar() {
         <Main>
           {readings.length && (
             <LastRead>
-              <label>Última leitura</label>
+              {/* <label>Última leitura</label>
               <h2>Y: {readings[readings.length - 1].y}</h2>
-              <h2>X: {readings[readings.length - 1].x.toLocaleTimeString()}</h2>
+              <h2>X: {readings[readings.length - 1].x.toLocaleTimeString()}</h2> */}
             </LastRead>
           )}
         </Main>

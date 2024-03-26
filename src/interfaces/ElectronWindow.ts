@@ -6,6 +6,10 @@ import { PortInfo } from "../types/PortInfo";
 export interface ElectronWindow extends Window {
   electronAPI: {
     // Main
+    minimize: () => void;
+    close: () => void;
+
+    // Database
     getConfig: () => void;
     config: (callback: (event: Event, config: Config) => void) => void;
     updateConfig: (config: Config) => void;
@@ -33,8 +37,9 @@ export interface ElectronWindow extends Window {
       delimiter: string
     ) => void;
     serialPortReading: (
-      callback: (event: Event, reading: number) => void
+      callback: (event: Event, reading: string) => void
     ) => void;
+    serialPortWriting: (writing: string) => void;
     serialPortConnected: (
       callback: (event: Event, connected: boolean, path: string) => void
     ) => Event;

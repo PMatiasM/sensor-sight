@@ -2,12 +2,11 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #201c1c;
-  overflow: hidden;
 `;
 
 export const Main = styled.div`
@@ -71,5 +70,14 @@ export const ListItem = styled.button.attrs({ type: "button" })`
   &:hover {
     background-color: #e2b8a5;
     color: #2a2a2a;
+  }
+
+  &:disabled {
+    background-color: revert;
+  }
+
+  &:disabled:hover {
+    background-color: revert;
+    color: #e2b8a5;
   }
 `;

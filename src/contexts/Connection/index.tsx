@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { ConnectionContextData } from "../../types/ConnectionContextData";
-import { CONNECTION } from "../../Enums/Connection";
+import { CONNECTION } from "../../enums/Connection";
 import { Reading } from "../../types/Reading";
 
 declare const window: ElectronWindow;
@@ -18,8 +18,9 @@ export function ConnectionProvider({
 }) {
   const [connection, setConnection] = useState<CONNECTION | null>(null);
   const [deviceName, setDeviceName] = useState<string>("");
-  const [preSave, setPreSave] = useState<Reading[]>([]);
-  const [readings, setReadings] = useState<Reading[]>([]);
+  const [preSave, setPreSave] = useState<Reading[][]>([]);
+  const [terminal, setTerminal] = useState<string>("");
+  const [readings, setReadings] = useState<Reading[][]>([]);
   const [customDisconnect, setCustomDisconnect] = useState<
     (() => Promise<void>) | null
   >(null);
@@ -35,15 +36,19 @@ export function ConnectionProvider({
         device: deviceName,
         connection,
         date: new Date(),
-        readings: [...preSave],
+        readings: [],
       });
     }
     setConnection(null);
     setDeviceName("");
     setPreSave([]);
+    setTerminal("");
     setReadings([]);
     setCustomDisconnect(null);
-    window.electronAPI.cleanListeners(["serial-port-reading"]);
+  };
+
+  const updateTerminal = (reading: string) => {
+    setTerminal((terminal) => terminal.concat(reading));
   };
 
   const parseReading = (reading: DataView) => {
@@ -54,18 +59,25 @@ export function ConnectionProvider({
     return reading.getUint8(1);
   };
 
-  const handleReading = (reading: number) => {
-    const newItem = { x: new Date(), y: reading };
-    setPreSave((preSave) => [...preSave, newItem]);
+  const handleReading = (reading: number[]) => {
     setReadings((readings) => {
-      if (readings.length === 60) {
-        const aux = [...readings];
-        aux.shift();
-        aux.push(newItem);
-        return aux;
+      const aux = [...readings];
+      for (let index = 0; index < reading.length; index++) {
+        const element = reading[index];
+        if (aux.length < reading.length) {
+          aux.push([{ x: new Date(), y: element }]);
+        } else {
+          const auxEl = [...aux[index]];
+          if (auxEl.length === 60) {
+            auxEl.shift();
+          }
+          auxEl.push({ x: new Date(), y: element });
+          aux[index] = [...auxEl];
+        }
       }
-      return [...readings, newItem];
+      return aux;
     });
+    // setPreSave((preSave) => [...preSave, newReading]);
   };
 
   const configureDisconnect = (callback: () => Promise<void>) => {
@@ -91,8 +103,10 @@ export function ConnectionProvider({
         connection,
         deviceName,
         preSave,
+        terminal,
         readings,
         connect,
+        updateTerminal,
         parseReading,
         handleReading,
         configureDisconnect,

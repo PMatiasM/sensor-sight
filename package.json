@@ -12,6 +12,7 @@
   "dependencies": {
     "@nivo/core": "^0.84.0",
     "@nivo/line": "^0.84.0",
+    "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -21,7 +22,6 @@
     "styled-components": "^6.1.8"
   },
   "devDependencies": {
-    "@types/dom-serial": "^1.0.6",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@types/web-bluetooth": "^0.0.20",

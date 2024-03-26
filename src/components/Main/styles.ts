@@ -21,13 +21,44 @@ export const ChartWrapper = styled.div`
   border-radius: 10px;
 `;
 
+export const Options = styled.div`
+  width: 100%;
+  height: 7%;
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 5px;
+  border: 1px solid rgba(118, 118, 118, 0.3);
+  border-bottom: none;
+`;
+
+export const Option = styled.span<{ $selected?: boolean }>`
+  margin: 0 5px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  color: ${(props) =>
+    props.$selected ? "#ffffff" : "rgba(118, 118, 118, 0.5)"};
+
+  &:hover {
+    color: #ffffff;
+  }
+`;
+
+export const Infos = styled.div`
+  width: 100%;
+  height: 43%;
+  padding-bottom: 1rem;
+`;
+
 export const InfosWrapper = styled.div`
   width: 100%;
-  height: 50%;
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
+  border: 1px solid rgba(118, 118, 118, 0.3);
+  border-top: none;
 `;
 
 export const InfoBlock = styled.div`
@@ -37,5 +68,5 @@ export const InfoBlock = styled.div`
 `;
 
 export const InfoItem = styled.div`
-  color: white;
+  color: #ffffff;
 `;

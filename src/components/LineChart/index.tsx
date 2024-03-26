@@ -1,15 +1,20 @@
+import { useEffect, useState } from "react";
 import { ResponsiveLine } from "@nivo/line";
 import { useConnection } from "../../contexts/Connection";
+import { ChartData } from "../../types/ChartData";
 
 export default function LineChart() {
   const { readings } = useConnection();
-  const chartData = [
-    {
-      id: "japan",
-      color: "hsl(151, 70%, 50%)",
-      data: readings,
-    },
-  ];
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+  useEffect(() => {
+    setChartData(
+      readings.map((reading, index) => ({
+        id: `${index}`,
+        color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+        data: reading,
+      }))
+    );
+  }, [readings]);
   return (
     <ResponsiveLine
       data={chartData}

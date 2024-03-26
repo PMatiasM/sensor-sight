@@ -8,6 +8,7 @@ import BluetoothModal from "../../components/BluetoothModal";
 import SerialModal from "../../components/SerialModal";
 
 import { BackButton, Container, List, ListItem, Main, Title } from "./styles";
+import NetworkModal from "../../components/NetworkModal";
 
 declare const window: ElectronWindow;
 
@@ -45,7 +46,11 @@ export default function Connection() {
           >
             <span>Bluetooth</span>
           </ListItem>
-          <ListItem>
+          <ListItem
+            onClick={async () => {
+              openModal("network-modal");
+            }}
+          >
             <span>Network</span>
           </ListItem>
           <ListItem
@@ -59,6 +64,7 @@ export default function Connection() {
         </List>
       </Main>
       <BluetoothModal />
+      <NetworkModal />
       <SerialModal />
     </Container>
   );

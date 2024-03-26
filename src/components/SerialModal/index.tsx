@@ -6,7 +6,7 @@ import { useConfig } from "../../contexts/Config";
 import { useConnection } from "../../contexts/Connection";
 import { PortInfo } from "../../types/PortInfo";
 import { closeModal } from "../../common/utils/modalControl";
-import { CONNECTION } from "../../Enums/Connection";
+import { CONNECTION } from "../../enums/Connection";
 import Spinner from "../Spinner";
 
 import { CancelButton, List, ListItem } from "./styles";
@@ -15,7 +15,7 @@ declare const window: ElectronWindow;
 
 export default function SerialModal() {
   const { config } = useConfig();
-  const { connect, handleReading, configureDisconnect } = useConnection();
+  const { connect, configureDisconnect } = useConnection();
   const [ports, setPorts] = useState<PortInfo[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -37,9 +37,6 @@ export default function SerialModal() {
       }
       setLoading(false);
       closeModal("serial-modal");
-    });
-    window.electronAPI.serialPortReading((_, reading) => {
-      handleReading(reading);
     });
     configureDisconnect(async () => {
       window.electronAPI.disconnectSerialPort();

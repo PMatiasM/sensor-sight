@@ -7,7 +7,7 @@ import { useConnection } from "../../contexts/Connection";
 import { ElectronBluetoothDevice } from "../../types/ElectronBluetoothDevice";
 import { closeModal } from "../../common/utils/modalControl";
 import { CharacteristicEvent } from "../../interfaces/CharacteristicEvent";
-import { CONNECTION } from "../../Enums/Connection";
+import { CONNECTION } from "../../enums/Connection";
 import Spinner from "../Spinner";
 
 import { CancelButton, List, ListItem } from "./styles";
@@ -55,7 +55,7 @@ export default function BluetoothModal() {
 
         const characteristicvaluechangedCallback = (e: Event) => {
           const event = e as CharacteristicEvent;
-          handleReading(parseReading(event.target.value));
+          handleReading([parseReading(event.target.value)]);
         };
 
         characteristic.addEventListener(
