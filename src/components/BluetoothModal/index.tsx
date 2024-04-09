@@ -22,8 +22,6 @@ export default function BluetoothModal() {
   const [loading, setLoading] = useState(false);
 
   const getDevice = async (device: ElectronBluetoothDevice) => {
-    // Tem como fazer mandando um evento e definindo o nome do dispositivo
-    // na classe e fazer igual ao exemplo sem uma lista
     for (
       let index = 0;
       index < config!.bluetooth.attemptsToFindTheDevice;

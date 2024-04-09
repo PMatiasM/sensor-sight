@@ -45,7 +45,7 @@ export function ExperimentProvider({
         device: deviceName,
         connection,
         date: new Date(),
-        readings: preSave, // ver,
+        readings: preSave,
       });
     }
     setExperiment(null);
@@ -70,46 +70,28 @@ export function ExperimentProvider({
   };
 
   const handleReading = (reading: number[]) => {
+    const x = new Date();
     setReadings((readings) => {
       if (!readings.length) {
-        return reading.map((element) => [{ x: new Date(), y: element }]);
+        return reading.map((element) => [{ x, y: element }]);
       }
       const aux = [...readings];
       reading.map((element, index) => {
         if (aux[index].length === 60) {
           aux[index].shift();
         }
-        aux[index].push({ x: new Date(), y: element });
+        aux[index].push({ x, y: element });
       });
       return aux;
     });
     setPreSave((preSave) => {
       if (!preSave.length) {
-        return reading.map((element) => [{ x: new Date(), y: element }]);
+        return reading.map((element) => [{ x, y: element }]);
       }
       const aux = [...preSave];
-      reading.map((element, index) =>
-        aux[index].push({ x: new Date(), y: element })
-      );
+      reading.map((element, index) => aux[index].push({ x, y: element }));
       return aux;
     });
-    // setReadings((readings) => {
-    //   const aux = [...readings];
-    //   for (let index = 0; index < reading.length; index++) {
-    //     const element = reading[index];
-    //     if (aux.length < reading.length) {
-    //       aux.push([{ x: new Date(), y: element }]);
-    //     } else {
-    //       const auxElement = [...aux[index]];
-    //       if (auxElement.length === 60) {
-    //         auxElement.shift();
-    //       }
-    //       auxElement.push({ x: new Date(), y: element });
-    //       aux[index] = [...auxElement];
-    //     }
-    //   }
-    //   return aux;
-    // });
   };
 
   const handleWriting = (value: string) => {

@@ -36,7 +36,6 @@ export default function Connection() {
           <ListItem
             onClick={async () => {
               openModal("bluetooth-modal");
-              // catch pra ver se está desligado
               await navigator.bluetooth.requestDevice({
                 acceptAllDevices: true,
                 optionalServices: [config!.bluetooth.primaryService],
