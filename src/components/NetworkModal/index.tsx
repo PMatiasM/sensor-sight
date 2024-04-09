@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { useConfig } from "../../contexts/Config";
-import { useConnection } from "../../contexts/Connection";
+import { useExperiment } from "../../contexts/Experiment";
 import { closeModal } from "../../common/utils/modalControl";
 import { CONNECTION } from "../../enums/Connection";
 import Spinner from "../Spinner";
@@ -14,7 +14,7 @@ declare const window: ElectronWindow;
 
 export default function NetworkModal() {
   const { config } = useConfig();
-  const { connect, configureDisconnect } = useConnection();
+  const { connect, configureDisconnect } = useExperiment();
   const [URI, setURI] = useState<string>(config!.network.URI);
   const [loading, setLoading] = useState(false);
 

@@ -1,24 +1,28 @@
 import { useEffect, useState } from "react";
 import { ResponsiveLine } from "@nivo/line";
-import { useConnection } from "../../contexts/Connection";
+import { useExperiment } from "../../contexts/Experiment";
 import { ChartData } from "../../types/ChartData";
 
 export default function LineChart() {
-  const { readings } = useConnection();
+  const { experiment, readings } = useExperiment();
   const [chartData, setChartData] = useState<ChartData[]>([]);
   useEffect(() => {
-    setChartData(
-      readings.map((reading, index) => ({
-        id: `${index}`,
-        color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-        data: reading,
-      }))
-    );
+    const a = [];
+    for (
+      let index = 0;
+      index < experiment!.variables.length && index < readings.length;
+      index++
+    ) {
+      const variable = experiment!.variables[index];
+      const reading = readings[index];
+      a.push({ id: `${variable.name}`, data: reading });
+    }
+    setChartData(a);
   }, [readings]);
   return (
     <ResponsiveLine
       data={chartData}
-      margin={{ top: 50, right: 60, bottom: 50, left: 60 }}
+      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
       xScale={{
         format: "%Y-%m-%dT%H:%M:%S.%L%Z",
         type: "time",
@@ -46,6 +50,7 @@ export default function LineChart() {
         legendPosition: "middle",
         truncateTickAt: 0,
       }}
+      colors={{ scheme: "category10" }}
       pointSize={10}
       pointColor={{ theme: "background" }}
       pointBorderWidth={2}
@@ -53,6 +58,32 @@ export default function LineChart() {
       pointLabelYOffset={-12}
       enableCrosshair={true}
       useMesh={true}
+      legends={[
+        {
+          anchor: "bottom-right",
+          direction: "column",
+          justify: false,
+          translateX: 100,
+          translateY: 0,
+          itemsSpacing: 0,
+          itemDirection: "left-to-right",
+          itemWidth: 80,
+          itemHeight: 20,
+          itemOpacity: 0.75,
+          symbolSize: 12,
+          symbolShape: "circle",
+          symbolBorderColor: "rgba(0, 0, 0, .5)",
+          effects: [
+            {
+              on: "hover",
+              style: {
+                itemBackground: "rgba(0, 0, 0, .03)",
+                itemOpacity: 1,
+              },
+            },
+          ],
+        },
+      ]}
     />
   );
 }

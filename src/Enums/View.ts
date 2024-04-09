@@ -1,4 +1,8 @@
 export enum VIEW {
+  DEFAULT = "DEFAULT",
+  CUSTOM = "CUSTOM",
+  PLAIN = "PLAIN",
+  CHART = "CHART",
   CONNECTION = "CONNECTION",
   TERMINAL = "TERMINAL",
 }

@@ -25,10 +25,6 @@ export const Main = styled.div`
   align-items: center;
 `;
 
-export const LastRead = styled.div`
-  color: #ffffff;
-`;
-
 export const Footer = styled.div`
   width: 100%;
   display: flex;

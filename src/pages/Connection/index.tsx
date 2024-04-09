@@ -6,9 +6,9 @@ import { useConfig } from "../../contexts/Config";
 import { openModal } from "../../common/utils/modalControl";
 import BluetoothModal from "../../components/BluetoothModal";
 import SerialModal from "../../components/SerialModal";
+import NetworkModal from "../../components/NetworkModal";
 
 import { BackButton, Container, List, ListItem, Main, Title } from "./styles";
-import NetworkModal from "../../components/NetworkModal";
 
 declare const window: ElectronWindow;
 
@@ -26,7 +26,7 @@ export default function Connection() {
   return (
     <Container>
       <Main>
-        <BackButton onClick={() => navigate("/")}>
+        <BackButton onClick={() => navigate("/experiments")}>
           <MdKeyboardReturn size="2rem" />
         </BackButton>
         <Title>

@@ -1,35 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
-import { useConfig } from "../../contexts/Config";
-import { useConnection } from "../../contexts/Connection";
-import { CONNECTION } from "../../enums/Connection";
+import { useExperiment } from "../../contexts/Experiment";
 
 import { Container, Input, Screen } from "./styles";
 
 declare const window: ElectronWindow;
 
 export default function Terminal({ className }: { className: string }) {
-  const { config } = useConfig();
-  const { connection, terminal } = useConnection();
+  const { terminal, handleWriting } = useExperiment();
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
   const [value, setValue] = useState<string>("");
   const ref = useRef<HTMLTextAreaElement | null>(null);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    switch (connection) {
-      case CONNECTION.BLUETOOTH:
-        break;
-      case CONNECTION.NETWORK:
-        console.log(`Network Terminal - ${value}`);
-        break;
-      case CONNECTION.SERIAL:
-        window.electronAPI.serialPortWriting(
-          `${value}${config!.serial.delimiter}`
-        );
-        break;
-      default:
-        break;
-    }
+    handleWriting(value);
     setValue("");
   };
   useEffect(() => {

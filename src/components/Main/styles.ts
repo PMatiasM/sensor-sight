@@ -14,11 +14,32 @@ export const Content = styled.div`
   padding: 1rem;
 `;
 
+export const PlainWrapper = styled.div`
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  border: 1px solid rgba(118, 118, 118, 0.3);
+  border-radius: 0 0 10px 10px;
+  border-top: none;
+  margin-bottom: 1rem;
+  color: #ffffff;
+`;
+
+export const PlainVariable = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 export const ChartWrapper = styled.div`
   width: 100%;
   height: 50%;
   background-color: aliceblue;
-  border-radius: 10px;
+  border-radius: 0 0 10px 10px;
+  margin-bottom: 1rem;
 `;
 
 export const Options = styled.div`
@@ -26,10 +47,10 @@ export const Options = styled.div`
   height: 7%;
   display: flex;
   align-items: center;
-  margin-top: 1rem;
   padding: 5px;
   border: 1px solid rgba(118, 118, 118, 0.3);
   border-bottom: none;
+  border-radius: 10px 10px 0 0;
 `;
 
 export const Option = styled.span<{ $selected?: boolean }>`
@@ -46,7 +67,7 @@ export const Option = styled.span<{ $selected?: boolean }>`
 
 export const Infos = styled.div`
   width: 100%;
-  height: 43%;
+  height: 36%;
   padding-bottom: 1rem;
 `;
 
@@ -58,6 +79,7 @@ export const InfosWrapper = styled.div`
   justify-content: space-around;
   align-items: center;
   border: 1px solid rgba(118, 118, 118, 0.3);
+  border-radius: 0 0 10px 10px;
   border-top: none;
 `;
 

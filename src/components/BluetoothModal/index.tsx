@@ -3,7 +3,7 @@ import { MdBluetooth } from "react-icons/md";
 import { toast } from "react-toastify";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { useConfig } from "../../contexts/Config";
-import { useConnection } from "../../contexts/Connection";
+import { useExperiment } from "../../contexts/Experiment";
 import { ElectronBluetoothDevice } from "../../types/ElectronBluetoothDevice";
 import { closeModal } from "../../common/utils/modalControl";
 import { CharacteristicEvent } from "../../interfaces/CharacteristicEvent";
@@ -17,7 +17,7 @@ declare const window: ElectronWindow;
 export default function BluetoothModal() {
   const { config } = useConfig();
   const { connect, parseReading, handleReading, configureDisconnect } =
-    useConnection();
+    useExperiment();
   const [devices, setDevices] = useState<ElectronBluetoothDevice[]>([]);
   const [loading, setLoading] = useState(false);
 

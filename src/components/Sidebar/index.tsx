@@ -1,11 +1,13 @@
-import { useConnection } from "../../contexts/Connection";
+import { ElectronWindow } from "../../interfaces/ElectronWindow";
+import { useExperiment } from "../../contexts/Experiment";
 import Logo from "../Logo";
 
-import { Button, Container, Footer, Header, LastRead, Main } from "./styles";
+import { Button, Container, Footer, Header, Main } from "./styles";
+
+declare const window: ElectronWindow;
 
 export default function Sidebar() {
-  const { readings } = useConnection();
-  const { disconnect } = useConnection();
+  const { experiment, handleWriting, disconnect } = useExperiment();
   return (
     <Container>
       <div>
@@ -14,13 +16,14 @@ export default function Sidebar() {
         </Header>
         <hr className="border-1 border-top" />
         <Main>
-          {readings.length && (
-            <LastRead>
-              {/* <label>Última leitura</label>
-              <h2>Y: {readings[readings.length - 1].y}</h2>
-              <h2>X: {readings[readings.length - 1].x.toLocaleTimeString()}</h2> */}
-            </LastRead>
-          )}
+          {experiment!.buttons.map((button) => (
+            <Button
+              className="btn btn-secondary"
+              onClick={() => handleWriting(button.code)}
+            >
+              {button.name}
+            </Button>
+          ))}
         </Main>
       </div>
       <Footer>

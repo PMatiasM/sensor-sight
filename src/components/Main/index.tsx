@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { useConnection } from "../../contexts/Connection";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useExperiment } from "../../contexts/Experiment";
 import { VIEW } from "../../enums/View";
 import LineChart from "../LineChart";
 import Terminal from "../Terminal";
@@ -14,11 +14,15 @@ import {
   InfosWrapper,
   Option,
   Options,
+  PlainVariable,
+  PlainWrapper,
 } from "./styles";
 
 export default function Main() {
-  const { connection, deviceName, preSave } = useConnection();
+  const { experiment, connection, deviceName, preSave, readings } =
+    useExperiment();
   const startTime = Date.now();
+  const [dataView, setDataView] = useState<VIEW>(VIEW.PLAIN);
   const [view, setView] = useState<VIEW>(VIEW.CONNECTION);
   const [clock, setClock] = useState<string>("");
   const updateTime = useCallback(() => {
@@ -38,13 +42,54 @@ export default function Main() {
     }
   }, []);
 
+  const plainData = useMemo(() => {
+    const elements = [];
+    for (
+      let index = 0;
+      index < experiment!.variables.length && index < readings.length;
+      index++
+    ) {
+      const variable = experiment!.variables[index];
+      const reading = readings[index];
+      elements.push(
+        <PlainVariable key={`main-plain-variable-${index}`}>
+          <h3>{variable.name}:</h3>
+          <h4>{reading[reading.length - 1].y}</h4>
+          <p>{variable.unit}</p>
+        </PlainVariable>
+      );
+    }
+    return elements;
+  }, [readings]);
+
   useEffect(() => {
     updateTime();
   }, [updateTime]);
   return (
     <Container>
       <Content>
-        <ChartWrapper>
+        <Options>
+          <Option
+            $selected={dataView === VIEW.PLAIN}
+            onClick={() => setDataView(VIEW.PLAIN)}
+          >
+            PLAIN
+          </Option>
+          <Option
+            $selected={dataView === VIEW.CHART}
+            onClick={() => experiment!.chart && setDataView(VIEW.CHART)}
+          >
+            CHART
+          </Option>
+        </Options>
+        <PlainWrapper
+          className={dataView !== VIEW.PLAIN ? "visually-hidden" : ""}
+        >
+          {plainData}
+        </PlainWrapper>
+        <ChartWrapper
+          className={dataView !== VIEW.CHART ? "visually-hidden" : ""}
+        >
           <LineChart />
         </ChartWrapper>
         <Options>
@@ -56,7 +101,7 @@ export default function Main() {
           </Option>
           <Option
             $selected={view === VIEW.TERMINAL}
-            onClick={() => setView(VIEW.TERMINAL)}
+            onClick={() => experiment!.terminal && setView(VIEW.TERMINAL)}
           >
             TERMINAL
           </Option>
@@ -80,7 +125,13 @@ export default function Main() {
               </InfoItem>
               <InfoItem>
                 <label>Dados recebidos</label>
-                <h2>{preSave.length}</h2>
+                <h2>
+                  {preSave.reduce(
+                    (accumulator, currentValue) =>
+                      accumulator + currentValue.length,
+                    0
+                  )}
+                </h2>
               </InfoItem>
             </InfoBlock>
           </InfosWrapper>

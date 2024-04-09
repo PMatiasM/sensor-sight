@@ -1,6 +1,7 @@
 import { Config } from "../types/Config";
 import { Data } from "../types/Data";
 import { ElectronBluetoothDevice } from "../types/ElectronBluetoothDevice";
+import { Experiment } from "../types/Experiment";
 import { PortInfo } from "../types/PortInfo";
 
 export interface ElectronWindow extends Window {
@@ -10,10 +11,24 @@ export interface ElectronWindow extends Window {
     close: () => void;
 
     // Database
+    // Config
     getConfig: () => void;
     config: (callback: (event: Event, config: Config) => void) => void;
     updateConfig: (config: Config) => void;
     resetConfig: () => void;
+    // Experiment
+    getExperiment: () => void;
+    experiment: (
+      callback: (
+        event: Event,
+        defaultExperiment: Experiment[],
+        userExperiment: Experiment[]
+      ) => void
+    ) => void;
+    createExperiment: (experiment: Experiment) => void;
+    updateExperiment: (id: string, experiment: Experiment) => void;
+    deleteExperiment: (id: string) => void;
+    // Data
     getData: () => void;
     data: (callback: (event: Event, data: Data[]) => void) => void;
     saveData: (data: Data) => void;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
-import { useConnection } from "../../contexts/Connection";
+import { useExperiment } from "../../contexts/Experiment";
 import { PREFIX } from "../../constants";
 import Main from "../../components/Main";
 import Sidebar from "../../components/Sidebar";
@@ -10,7 +10,7 @@ import { Container } from "./styles";
 declare const window: ElectronWindow;
 
 export default function Dashboard() {
-  const { updateTerminal, handleReading } = useConnection();
+  const { updateTerminal, handleReading } = useExperiment();
   useEffect(() => {
     window.electronAPI.serialPortReading((_, reading) => {
       updateTerminal(reading);

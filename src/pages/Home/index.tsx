@@ -15,10 +15,10 @@ export default function Home() {
           <Logo />
         </Title>
         <Box>
-          <Button onClick={() => navigate("/connection")}>
+          <Button onClick={() => navigate("/experiments")}>
             <span>Start</span>
           </Button>
-          <Button onClick={() => navigate("/connection")}>
+          <Button onClick={() => navigate("/")}>
             <span>Learn</span>
           </Button>
           <Button onClick={() => navigate("/history")}>

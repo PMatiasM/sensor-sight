@@ -13,12 +13,16 @@ export default function History() {
   const [data, setData] = useState<Data[]>([]);
 
   const exportData = (data: Data) => {
-    const header = "Device, Connection, Date, X, Y";
+    const header = `Device, Connection, Date, ${data.experiment.variables
+      .map((variable) => variable.name)
+      .join(", ")}`;
     return [
       header,
-      ...data.readings.map(
-        (reading) =>
-          `${data.device},${data.connection},${data.date},${reading.x},${reading.y}`
+      ...data.readings[0].map(
+        (_, index) =>
+          `${data.device}, ${data.connection}, ${
+            data.readings[0][index].x
+          }, ${data.readings.map((reading) => reading[index].y).join(", ")}`
       ),
     ].join("\r\n");
   };

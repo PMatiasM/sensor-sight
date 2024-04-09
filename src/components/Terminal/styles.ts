@@ -4,7 +4,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 43%;
+  height: 36%;
   padding-bottom: 1rem;
 `;
 
@@ -39,6 +39,7 @@ export const Input = styled.input`
   background-color: #2a2a2a;
   color: #ffffff;
   border: 1px solid rgba(118, 118, 118, 0.3);
+  border-radius: 0 0 10px 10px;
   padding: 5px;
   outline: none;
 `;

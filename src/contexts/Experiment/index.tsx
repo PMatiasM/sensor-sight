@@ -1,0 +1,182 @@
+import { createContext, useContext, useState } from "react";
+import { toast } from "react-toastify";
+import { useConfig } from "../Config";
+import { ElectronWindow } from "../../interfaces/ElectronWindow";
+import { ExperimentContextData } from "../../types/ExperimentContextData";
+import { CONNECTION } from "../../enums/Connection";
+import { Reading } from "../../types/Reading";
+import { Experiment } from "../../types/Experiment";
+
+declare const window: ElectronWindow;
+
+const ExperimentContext = createContext<ExperimentContextData>(
+  {} as ExperimentContextData
+);
+
+export function ExperimentProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { config } = useConfig();
+  const [experiment, setExperiment] = useState<Experiment | null>(null);
+  const [connection, setConnection] = useState<CONNECTION | null>(null);
+  const [deviceName, setDeviceName] = useState<string>("");
+  const [preSave, setPreSave] = useState<Reading[][]>([]);
+  const [terminal, setTerminal] = useState<string>("");
+  const [readings, setReadings] = useState<Reading[][]>([]);
+  const [customDisconnect, setCustomDisconnect] = useState<
+    (() => Promise<void>) | null
+  >(null);
+
+  const create = (data: Experiment) => {
+    setExperiment(data);
+  };
+
+  const connect = (type: CONNECTION, device: string) => {
+    setConnection(type);
+    setDeviceName(device);
+  };
+
+  const defaultDisconnect = async () => {
+    if (experiment && connection) {
+      window.electronAPI.saveData({
+        experiment,
+        device: deviceName,
+        connection,
+        date: new Date(),
+        readings: preSave, // ver,
+      });
+    }
+    setExperiment(null);
+    setConnection(null);
+    setDeviceName("");
+    setPreSave([]);
+    setTerminal("");
+    setReadings([]);
+    setCustomDisconnect(null);
+  };
+
+  const updateTerminal = (reading: string) => {
+    setTerminal((terminal) => terminal.concat(reading));
+  };
+
+  const parseReading = (reading: DataView) => {
+    const is16Bits = reading.getUint8(0) & 0x1;
+    if (is16Bits) {
+      return reading.getUint16(1, true);
+    }
+    return reading.getUint8(1);
+  };
+
+  const handleReading = (reading: number[]) => {
+    setReadings((readings) => {
+      if (!readings.length) {
+        return reading.map((element) => [{ x: new Date(), y: element }]);
+      }
+      const aux = [...readings];
+      reading.map((element, index) => {
+        if (aux[index].length === 60) {
+          aux[index].shift();
+        }
+        aux[index].push({ x: new Date(), y: element });
+      });
+      return aux;
+    });
+    setPreSave((preSave) => {
+      if (!preSave.length) {
+        return reading.map((element) => [{ x: new Date(), y: element }]);
+      }
+      const aux = [...preSave];
+      reading.map((element, index) =>
+        aux[index].push({ x: new Date(), y: element })
+      );
+      return aux;
+    });
+    // setReadings((readings) => {
+    //   const aux = [...readings];
+    //   for (let index = 0; index < reading.length; index++) {
+    //     const element = reading[index];
+    //     if (aux.length < reading.length) {
+    //       aux.push([{ x: new Date(), y: element }]);
+    //     } else {
+    //       const auxElement = [...aux[index]];
+    //       if (auxElement.length === 60) {
+    //         auxElement.shift();
+    //       }
+    //       auxElement.push({ x: new Date(), y: element });
+    //       aux[index] = [...auxElement];
+    //     }
+    //   }
+    //   return aux;
+    // });
+  };
+
+  const handleWriting = (value: string) => {
+    switch (connection) {
+      case CONNECTION.BLUETOOTH:
+        break;
+      case CONNECTION.NETWORK:
+        console.log(`Network Terminal - ${value}`);
+        break;
+      case CONNECTION.SERIAL:
+        window.electronAPI.serialPortWriting(
+          `${value}${config!.serial.delimiter}`
+        );
+        break;
+      default:
+        break;
+    }
+  };
+
+  const configureDisconnect = (callback: () => Promise<void>) => {
+    setCustomDisconnect(() => callback);
+  };
+
+  const disconnect = async () => {
+    if (customDisconnect) {
+      try {
+        await customDisconnect();
+      } catch (error) {
+        toast.warning(
+          "Failed to perform Disconnect disconnection for connection, performing standard disconnection"
+        );
+      }
+    }
+    await defaultDisconnect();
+  };
+
+  const destroy = () => {
+    setExperiment(null);
+  };
+
+  return (
+    <ExperimentContext.Provider
+      value={{
+        experiment,
+        connection,
+        deviceName,
+        preSave,
+        terminal,
+        readings,
+        create,
+        connect,
+        updateTerminal,
+        parseReading,
+        handleReading,
+        handleWriting,
+        configureDisconnect,
+        disconnect,
+        destroy,
+      }}
+    >
+      {children}
+    </ExperimentContext.Provider>
+  );
+}
+
+export function useExperiment() {
+  const context = useContext(ExperimentContext);
+
+  return context;
+}

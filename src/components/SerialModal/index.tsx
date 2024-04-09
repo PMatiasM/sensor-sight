@@ -3,7 +3,7 @@ import { MdCable } from "react-icons/md";
 import { toast } from "react-toastify";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { useConfig } from "../../contexts/Config";
-import { useConnection } from "../../contexts/Connection";
+import { useExperiment } from "../../contexts/Experiment";
 import { PortInfo } from "../../types/PortInfo";
 import { closeModal } from "../../common/utils/modalControl";
 import { CONNECTION } from "../../enums/Connection";
@@ -15,7 +15,7 @@ declare const window: ElectronWindow;
 
 export default function SerialModal() {
   const { config } = useConfig();
-  const { connect, configureDisconnect } = useConnection();
+  const { connect, configureDisconnect } = useExperiment();
   const [ports, setPorts] = useState<PortInfo[]>([]);
   const [loading, setLoading] = useState(false);
 

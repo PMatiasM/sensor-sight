@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { ToastContainer } from "react-toastify";
-import { ConnectionProvider } from "./contexts/Connection";
+import { ExperimentProvider } from "./contexts/Experiment";
 import { ConfigProvider } from "./contexts/Config";
 import AppRouter from "./routes";
 
@@ -12,14 +12,14 @@ import TitleBar from "./components/TitleBar";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ConfigProvider>
-      <ConnectionProvider>
+      <ExperimentProvider>
         <Window>
           <TitleBar />
           <App>
             <AppRouter />
           </App>
         </Window>
-      </ConnectionProvider>
+      </ExperimentProvider>
     </ConfigProvider>
     <ToastContainer
       position="top-right"
