@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdKeyboardReturn, MdOutlineHistory } from "react-icons/md";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { Data } from "../../types/Data";
+import { Positioning } from "../../types/Positioning";
 
 import {
   BackButton,
@@ -15,12 +16,31 @@ import {
   ItemInfos,
   ItemIcon,
 } from "./styles";
+import HistoryContextMenu from "../../components/HistoryContextMenu";
+import HistoryDeleteModal from "../../components/HistoryDeleteModal";
 
 declare const window: ElectronWindow;
 
 export default function History() {
   const navigate = useNavigate();
+  const ref = useRef<HTMLMenuElement | null>(null);
+  const [deleteId, setDeleteId] = useState("");
   const [data, setData] = useState<Data[]>([]);
+  const [positioning, setPositioning] = useState<Positioning | null>(null);
+
+  const handleContextMenu = (
+    event: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    setPositioning(
+      positioning === null
+        ? {
+            mouseY: event.clientY - 6,
+            mouseX: event.clientX + 2,
+          }
+        : null
+    );
+  };
 
   const exportData = (data: Data) => {
     const header = `Device, Connection, Date, ${data.experiment.variables
@@ -50,6 +70,17 @@ export default function History() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (ref.current && event.target) {
+        if (!ref.current.contains(event.target as Node)) {
+          setPositioning(null);
+        }
+      }
+    };
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
   return (
     <Container>
       <Main>
@@ -65,7 +96,14 @@ export default function History() {
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             return (
-              <Item key={new Date(item.date).toISOString()} href={url}>
+              <Item
+                key={new Date(item.date).toISOString()}
+                href={url}
+                onContextMenu={(event) => {
+                  setDeleteId(item.id);
+                  handleContextMenu(event);
+                }}
+              >
                 <ItemTitle>
                   <h3>{new Date(item.date).toLocaleDateString()}</h3>
                   <ItemInfos>
@@ -83,6 +121,8 @@ export default function History() {
           })}
         </List>
       </Main>
+      <HistoryContextMenu reference={ref} positioning={positioning} />
+      <HistoryDeleteModal id={deleteId} />
     </Container>
   );
 }

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { useConfig } from "../Config";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
@@ -41,6 +42,7 @@ export function ExperimentProvider({
   const defaultDisconnect = async () => {
     if (experiment && connection) {
       window.electronAPI.saveData({
+        id: uuidv4(),
         experiment,
         device: deviceName,
         connection,

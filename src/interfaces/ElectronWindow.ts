@@ -9,6 +9,7 @@ export interface ElectronWindow extends Window {
     // Main
     minimize: () => void;
     close: () => void;
+    cleanListeners: (channels: string[]) => void;
 
     // Database
     // Config
@@ -32,7 +33,7 @@ export interface ElectronWindow extends Window {
     getData: () => void;
     data: (callback: (event: Event, data: Data[]) => void) => void;
     saveData: (data: Data) => void;
-    cleanListeners: (channels: string[]) => void;
+    deleteData: (id: string) => void;
 
     // Bluetooth
     cancelBluetoothRequest: () => void;
