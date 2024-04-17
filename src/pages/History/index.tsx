@@ -1,10 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdKeyboardReturn } from "react-icons/md";
+import { MdKeyboardReturn, MdOutlineHistory } from "react-icons/md";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { Data } from "../../types/Data";
 
-import { BackButton, Container, List, ListItem, Main } from "./styles";
+import {
+  BackButton,
+  Container,
+  List,
+  Item,
+  Main,
+  Title,
+  ItemTitle,
+  ItemInfos,
+  ItemIcon,
+} from "./styles";
 
 declare const window: ElectronWindow;
 
@@ -43,17 +53,29 @@ export default function History() {
         <BackButton onClick={() => navigate("/")}>
           <MdKeyboardReturn size="2rem" />
         </BackButton>
+        <Title>
+          <h1>History</h1>
+        </Title>
         <List>
           {data.map((item) => {
             const csv = exportData(item);
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             return (
-              <ListItem key={new Date(item.date).toISOString()} href={url}>
-                <span>{new Date(item.date).toLocaleDateString()}</span>
-                <span>{item.device}</span>
-                <span>{item.connection}</span>
-              </ListItem>
+              <Item key={new Date(item.date).toISOString()} href={url}>
+                <ItemTitle>
+                  <h3>{new Date(item.date).toLocaleDateString()}</h3>
+                  <ItemInfos>
+                    <div>
+                      <p>Experiment: {item.experiment.name}</p>
+                      <p>Connection: {item.connection}</p>
+                    </div>
+                  </ItemInfos>
+                </ItemTitle>
+                <ItemIcon>
+                  <MdOutlineHistory size="4.5rem" />
+                </ItemIcon>
+              </Item>
             );
           })}
         </List>
