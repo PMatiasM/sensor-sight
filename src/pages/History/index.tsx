@@ -26,6 +26,9 @@ export default function History() {
     const header = `Device, Connection, Date, ${data.experiment.variables
       .map((variable) => variable.name)
       .join(", ")}`;
+    if (!data.readings.length) {
+      return header;
+    }
     return [
       header,
       ...data.readings[0].map(

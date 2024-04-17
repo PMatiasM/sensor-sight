@@ -26,8 +26,8 @@ export default function ExperimentContextMenu({
       $top={contextMenu ? contextMenu.positioning.mouseY : null}
       $left={contextMenu ? contextMenu.positioning.mouseX : null}
     >
-      {contextMenu ? (
-        contextMenu.view === VIEW.DEFAULT ? (
+      {contextMenu &&
+        (contextMenu.view === VIEW.DEFAULT ? (
           <MenuBody>
             <MenuItem
               onClick={() => {
@@ -69,10 +69,7 @@ export default function ExperimentContextMenu({
               <span>Delete</span>
             </MenuItem>
           </MenuBody>
-        )
-      ) : (
-        <></>
-      )}
+        ))}
     </Menu>
   );
 }
