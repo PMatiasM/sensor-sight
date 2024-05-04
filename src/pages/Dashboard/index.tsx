@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { useExperiment } from "../../contexts/Experiment";
-import { PREFIX } from "../../constants";
+import { PREFIX_LENGTH } from "../../constants";
+import { PREFIXES } from "../../enums/Prefixes";
 import Main from "../../components/Main";
 import Sidebar from "../../components/Sidebar";
 
@@ -13,10 +14,10 @@ export default function Dashboard() {
   const { updateTerminal, handleReading } = useExperiment();
   useEffect(() => {
     window.electronAPI.serialPortReading((_, reading) => {
-      updateTerminal(reading);
-      if (reading.substring(0, PREFIX.length) === PREFIX) {
+      updateTerminal({ date: new Date(), reading });
+      if (reading.substring(0, PREFIX_LENGTH) === PREFIXES.SSD) {
         const parsedReading: number[] = JSON.parse(
-          reading.substring(PREFIX.length)
+          reading.substring(PREFIX_LENGTH)
         );
         handleReading(parsedReading);
       }

@@ -1,4 +1,4 @@
-export const PREFIX = "ss:";
+export const PREFIX_LENGTH = 4;
 export const INTERVALS = [500, 1000, 1500, 2000];
 export const DELIMITERS = ["\n", "\r", "\r\n"];
 export const BAUDRATES = [

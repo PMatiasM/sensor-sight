@@ -8,14 +8,16 @@ export const Container = styled.div`
   padding-bottom: 1rem;
 `;
 
-export const Screen = styled.textarea`
+export const Screen = styled.div`
   width: 100%;
   height: 90%;
   padding: 5px;
   resize: none;
   background-color: #2a2a2a;
-  color: #ffffff;
+  border: 1px solid rgba(118, 118, 118, 0.3);
   border-top: none;
+  border-bottom: none;
+  overflow: auto;
 
   &::-webkit-scrollbar {
     width: 10px;

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { useConfig } from "../Config";
@@ -7,6 +7,7 @@ import { ExperimentContextData } from "../../types/ExperimentContextData";
 import { CONNECTION } from "../../enums/Connection";
 import { Reading } from "../../types/Reading";
 import { Experiment } from "../../types/Experiment";
+import { TerminalElement } from "../../types/TerminalElement";
 
 declare const window: ElectronWindow;
 
@@ -24,7 +25,7 @@ export function ExperimentProvider({
   const [connection, setConnection] = useState<CONNECTION | null>(null);
   const [deviceName, setDeviceName] = useState<string>("");
   const [preSave, setPreSave] = useState<Reading[][]>([]);
-  const [terminal, setTerminal] = useState<string>("");
+  const [terminal, setTerminal] = useState<TerminalElement[]>([]);
   const [readings, setReadings] = useState<Reading[][]>([]);
   const [customDisconnect, setCustomDisconnect] = useState<
     (() => Promise<void>) | null
@@ -54,13 +55,13 @@ export function ExperimentProvider({
     setConnection(null);
     setDeviceName("");
     setPreSave([]);
-    setTerminal("");
+    setTerminal([]);
     setReadings([]);
     setCustomDisconnect(null);
   };
 
-  const updateTerminal = (reading: string) => {
-    setTerminal((terminal) => terminal.concat(reading));
+  const updateTerminal = (reading: TerminalElement) => {
+    setTerminal((terminal) => [...terminal, reading]);
   };
 
   const parseReading = (reading: DataView) => {
