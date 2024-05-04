@@ -32,14 +32,10 @@ export default function History() {
     event: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
     event.preventDefault();
-    setPositioning(
-      positioning === null
-        ? {
-            mouseY: event.clientY - 6,
-            mouseX: event.clientX + 2,
-          }
-        : null
-    );
+    setPositioning({
+      mouseY: event.clientY - 6,
+      mouseX: event.clientX + 2,
+    });
   };
 
   const exportData = (data: Data) => {

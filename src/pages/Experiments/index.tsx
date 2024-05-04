@@ -21,18 +21,14 @@ export default function Experiments() {
     experiment: Experiment
   ) => {
     event.preventDefault();
-    setContextMenu(
-      contextMenu === null
-        ? {
-            view,
-            experiment,
-            positioning: {
-              mouseY: event.clientY - 6,
-              mouseX: event.clientX + 2,
-            },
-          }
-        : null
-    );
+    setContextMenu({
+      view,
+      experiment,
+      positioning: {
+        mouseY: event.clientY - 6,
+        mouseX: event.clientX + 2,
+      },
+    });
   };
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
