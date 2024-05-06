@@ -15,21 +15,21 @@ export default function TerminalElement({
   const parse = () => {
     switch (prefix) {
       case PREFIXES.SSD:
-        return { tag: "DATA", color: "#00b84c" };
+        return { tag: "DATA", color: "#00b84c", text: parsedReading };
       case PREFIXES.SSL:
-        return { tag: "LOG", color: "#027df0" };
+        return { tag: "LOG", color: "#027df0", text: parsedReading };
       case PREFIXES.SSW:
-        return { tag: "WARNING", color: "#f3f734" };
+        return { tag: "WARNING", color: "#f3f734", text: parsedReading };
       case PREFIXES.SSE:
-        return { tag: "ERROR", color: "#fc6b6b" };
+        return { tag: "ERROR", color: "#fc6b6b", text: parsedReading };
       default:
-        return { tag: "RAW", color: "#ffffff" };
+        return { tag: "RAW", color: "#ffffff", text: reading };
     }
   };
-  const { tag, color } = parse();
+  const { tag, color, text } = parse();
   return (
     <Element $color={color}>{`[${new Date(
       date
-    ).toLocaleTimeString()}] [${tag}] ${parsedReading}`}</Element>
+    ).toLocaleTimeString()}] [${tag}] ${text}`}</Element>
   );
 }
