@@ -1,27 +1,10 @@
-import { useEffect, useState } from "react";
 import { ResponsiveLine } from "@nivo/line";
-import { useExperiment } from "../../contexts/Experiment";
 import { ChartData } from "../../types/ChartData";
 
-export default function LineChart() {
-  const { experiment, readings } = useExperiment();
-  const [chartData, setChartData] = useState<ChartData[]>([]);
-  useEffect(() => {
-    const a = [];
-    for (
-      let index = 0;
-      index < experiment!.variables.length && index < readings.length;
-      index++
-    ) {
-      const variable = experiment!.variables[index];
-      const reading = readings[index];
-      a.push({ id: `${variable.name}`, data: reading });
-    }
-    setChartData(a);
-  }, [readings]);
+export default function LineChart({ data }: { data: ChartData[] }) {
   return (
     <ResponsiveLine
-      data={chartData}
+      data={data}
       margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
       xScale={{
         format: "%Y-%m-%dT%H:%M:%S.%L%Z",

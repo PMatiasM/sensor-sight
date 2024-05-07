@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useExperiment } from "../../contexts/Experiment";
+import { useContextMenu } from "../../hooks/useContextMenu";
+import { ParsedData } from "../../types/ParsedData";
 import { VIEW } from "../../enums/View";
 import LineChart from "../LineChart";
 import Terminal from "../Terminal";
+import ChartContextMenu from "../ChartContextMenu";
 
 import {
   ChartWrapper,
@@ -21,7 +24,9 @@ import {
 export default function Main() {
   const { experiment, connection, deviceName, preSave, readings } =
     useExperiment();
+  const { ref, positioning, handleContextMenu } = useContextMenu();
   const startTime = Date.now();
+  const [chartVariable, setChartVariable] = useState<string | null>(null);
   const [dataView, setDataView] = useState<VIEW>(VIEW.PLAIN);
   const [view, setView] = useState<VIEW>(VIEW.CONNECTION);
   const [clock, setClock] = useState<string>("");
@@ -42,8 +47,8 @@ export default function Main() {
     }
   }, []);
 
-  const plainData = useMemo(() => {
-    const elements = [];
+  const parseData = (): ParsedData[] => {
+    const aux = [];
     for (
       let index = 0;
       index < experiment!.variables.length && index < readings.length;
@@ -51,20 +56,21 @@ export default function Main() {
     ) {
       const variable = experiment!.variables[index];
       const reading = readings[index];
-      elements.push(
-        <PlainVariable key={`main-plain-variable-${index}`}>
-          <h3>{variable.name}:</h3>
-          <h4>{reading[reading.length - 1].y}</h4>
-          <p>{variable.unit}</p>
-        </PlainVariable>
-      );
+      aux.push({ variable, reading });
     }
-    return elements;
-  }, [readings]);
+    return aux;
+  };
+
+  const parsedData = useMemo(() => parseData(), [readings]);
+
+  const selectChartVariable = (variable: string | null) => {
+    setChartVariable(variable);
+  };
 
   useEffect(() => {
     updateTime();
   }, [updateTime]);
+
   return (
     <Container>
       <Content>
@@ -85,12 +91,28 @@ export default function Main() {
         <PlainWrapper
           className={dataView !== VIEW.PLAIN ? "visually-hidden" : ""}
         >
-          {plainData}
+          {parsedData.map(({ variable, reading }, index) => (
+            <PlainVariable key={`main-plain-variable-${index}`}>
+              <h3>{variable.name}:</h3>
+              <h4>{reading[reading.length - 1].y}</h4>
+              <p>{variable.unit}</p>
+            </PlainVariable>
+          ))}
         </PlainWrapper>
         <ChartWrapper
           className={dataView !== VIEW.CHART ? "visually-hidden" : ""}
+          onContextMenu={handleContextMenu}
         >
-          <LineChart />
+          <LineChart
+            data={parsedData
+              .map(({ variable, reading }) => ({
+                id: `${variable.name}`,
+                data: reading,
+              }))
+              .filter(({ id }) =>
+                chartVariable ? id === chartVariable : true
+              )}
+          />
         </ChartWrapper>
         <Options>
           <Option
@@ -138,6 +160,12 @@ export default function Main() {
         </Infos>
         <Terminal className={view !== VIEW.TERMINAL ? "visually-hidden" : ""} />
       </Content>
+      <ChartContextMenu
+        reference={ref}
+        positioning={positioning}
+        parsedData={parsedData}
+        selectChartVariable={selectChartVariable}
+      />
     </Container>
   );
 }

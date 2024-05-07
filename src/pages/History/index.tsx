@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdKeyboardReturn, MdOutlineHistory } from "react-icons/md";
+import { useContextMenu } from "../../hooks/useContextMenu";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { Data } from "../../types/Data";
-import { Positioning } from "../../types/Positioning";
+import HistoryContextMenu from "../../components/HistoryContextMenu";
+import HistoryDeleteModal from "../../components/HistoryDeleteModal";
 
 import {
   BackButton,
@@ -16,27 +18,14 @@ import {
   ItemInfos,
   ItemIcon,
 } from "./styles";
-import HistoryContextMenu from "../../components/HistoryContextMenu";
-import HistoryDeleteModal from "../../components/HistoryDeleteModal";
 
 declare const window: ElectronWindow;
 
 export default function History() {
   const navigate = useNavigate();
-  const ref = useRef<HTMLMenuElement | null>(null);
+  const { ref, positioning, handleContextMenu } = useContextMenu();
   const [deleteId, setDeleteId] = useState("");
   const [data, setData] = useState<Data[]>([]);
-  const [positioning, setPositioning] = useState<Positioning | null>(null);
-
-  const handleContextMenu = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    event.preventDefault();
-    setPositioning({
-      mouseY: event.clientY - 6,
-      mouseX: event.clientX + 2,
-    });
-  };
 
   const exportData = (data: Data) => {
     const header = `Device, Connection, Date, ${data.experiment.variables
@@ -64,18 +53,6 @@ export default function History() {
     return () => {
       window.electronAPI.cleanListeners(["data"]);
     };
-  }, []);
-
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      if (ref.current && event.target) {
-        if (!ref.current.contains(event.target as Node)) {
-          setPositioning(null);
-        }
-      }
-    };
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
   }, []);
   return (
     <Container>
