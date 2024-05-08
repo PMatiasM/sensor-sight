@@ -5,4 +5,5 @@ export const Element = styled.span<{
 }>`
   display: block;
   color: ${(props) => props.$color};
+  user-select: text;
 `;
