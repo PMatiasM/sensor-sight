@@ -16,8 +16,9 @@ export default function Sidebar() {
         </Header>
         <hr className="border-1 border-top" />
         <Main>
-          {experiment!.buttons.map((button) => (
+          {experiment!.buttons.map((button, index) => (
             <Button
+              key={`sidebar-button-${index}`}
               className="btn btn-secondary"
               onClick={() => handleWriting(button.code)}
             >
