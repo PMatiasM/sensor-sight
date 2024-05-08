@@ -23,8 +23,11 @@ export default function ChartContextMenu({
       $left={positioning ? positioning.mouseX : null}
     >
       <MenuBody>
-        {parsedData.map(({ variable }) => (
-          <MenuItem onClick={() => selectChartVariable(variable.name)}>
+        {parsedData.map(({ variable }, index) => (
+          <MenuItem
+            key={`chart-context-menu-${index}`}
+            onClick={() => selectChartVariable(variable.name)}
+          >
             <MdOutlineFunctions />
             <span>{variable.name}</span>
           </MenuItem>
