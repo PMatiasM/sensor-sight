@@ -78,6 +78,7 @@ export default function NetworkModal() {
               type="text"
               className="form-control"
               id="network-URI-input"
+              spellCheck={false}
               value={URI}
               onChange={(event) => setURI(event.target.value)}
             />

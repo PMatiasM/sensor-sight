@@ -89,6 +89,7 @@ export default function ExperimentModal() {
                     required
                     className="form-control"
                     id="experiment-name-input"
+                    spellCheck={false}
                     value={currentExperiment.name}
                     onChange={(event) =>
                       setCurrentExperiment((experiment) => ({
@@ -117,6 +118,7 @@ export default function ExperimentModal() {
                         required
                         className="form-control"
                         id={`experiment-variables-name-input-${index}`}
+                        spellCheck={false}
                         value={currentExperiment.variables[index].name}
                         onChange={(event) =>
                           setCurrentExperiment((currentExperiment) => {
@@ -145,6 +147,7 @@ export default function ExperimentModal() {
                         required
                         className="form-control"
                         id={`experiment-variables-unit-input-${index}`}
+                        spellCheck={false}
                         value={currentExperiment.variables[index].unit}
                         onChange={(event) =>
                           setCurrentExperiment((currentExperiment) => {
@@ -210,6 +213,7 @@ export default function ExperimentModal() {
                         required
                         className="form-control"
                         id={`experiment-buttons-name-input-${index}`}
+                        spellCheck={false}
                         value={currentExperiment.buttons[index].name}
                         onChange={(event) =>
                           setCurrentExperiment((currentExperiment) => {
@@ -236,6 +240,7 @@ export default function ExperimentModal() {
                         required
                         className="form-control"
                         id={`experiment-buttons-code-input-${index}`}
+                        spellCheck={false}
                         value={currentExperiment.buttons[index].code}
                         onChange={(event) =>
                           setCurrentExperiment((currentExperiment) => {

@@ -58,6 +58,7 @@ export default function ConfigModal() {
                         type="text"
                         className="form-control"
                         id="bluetooth-primaryService-input"
+                        spellCheck={false}
                         value={data.bluetooth.primaryService}
                         onChange={(event) =>
                           setData((data) => ({
@@ -78,6 +79,7 @@ export default function ConfigModal() {
                         type="text"
                         className="form-control"
                         id="bluetooth-characteristic-input"
+                        spellCheck={false}
                         value={data.bluetooth.characteristic}
                         onChange={(event) =>
                           setData((data) => ({
@@ -128,6 +130,7 @@ export default function ConfigModal() {
                         type="text"
                         className="form-control"
                         id="network-URI-input"
+                        spellCheck={false}
                         value={data.network.URI}
                         onChange={(event) =>
                           setData((data) => ({
