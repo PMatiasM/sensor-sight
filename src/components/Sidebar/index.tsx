@@ -29,7 +29,7 @@ export default function Sidebar() {
       </div>
       <Footer>
         <Button className="btn btn-danger" onClick={disconnect}>
-          Desconectar
+          Disconnect
         </Button>
       </Footer>
     </Container>
