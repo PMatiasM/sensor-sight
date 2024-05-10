@@ -11,8 +11,9 @@ import { Container } from "./styles";
 declare const window: ElectronWindow;
 
 export default function Dashboard() {
-  const { updateTerminal, handleReading } = useExperiment();
+  const { updateTerminal, handleReading, disconnect } = useExperiment();
   useEffect(() => {
+    window.addEventListener("beforeunload", disconnect);
     window.electronAPI.serialPortReading((_, reading) => {
       updateTerminal({ date: new Date(), reading });
       if (reading.substring(0, PREFIX_LENGTH) === PREFIXES.SSD) {
@@ -24,6 +25,7 @@ export default function Dashboard() {
     });
 
     return () => {
+      window.removeEventListener("beforeunload", disconnect);
       window.electronAPI.cleanListeners(["serial-port-reading"]);
     };
   }, []);
