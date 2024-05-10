@@ -17,7 +17,7 @@ export default function LineChart({ data }: { data: ChartData[] }) {
       axisTop={null}
       axisRight={null}
       axisBottom={{
-        format: "%S.%L",
+        format: "%H:%M:%S",
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
@@ -33,7 +33,7 @@ export default function LineChart({ data }: { data: ChartData[] }) {
         legendPosition: "middle",
         truncateTickAt: 0,
       }}
-      colors={{ scheme: "category10" }}
+      colors={({ color }) => color}
       pointSize={10}
       pointColor={{ theme: "background" }}
       pointBorderWidth={2}

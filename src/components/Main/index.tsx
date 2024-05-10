@@ -3,6 +3,7 @@ import { useExperiment } from "../../contexts/Experiment";
 import { useContextMenu } from "../../hooks/useContextMenu";
 import { ParsedData } from "../../types/ParsedData";
 import { VIEW } from "../../enums/View";
+import { schemeCategory10 } from "../../themes/SchemeCategory10";
 import LineChart from "../LineChart";
 import Terminal from "../Terminal";
 import ChartContextMenu from "../ChartContextMenu";
@@ -105,9 +106,10 @@ export default function Main() {
         >
           <LineChart
             data={parsedData
-              .map(({ variable, reading }) => ({
+              .map(({ variable, reading }, index) => ({
                 id: `${variable.name}`,
                 data: reading,
+                color: schemeCategory10[index] || "#e2b8a5",
               }))
               .filter(({ id }) =>
                 chartVariable ? id === chartVariable : true
