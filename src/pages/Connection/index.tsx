@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MdKeyboardReturn, MdWifi } from "react-icons/md";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { useConfig } from "../../contexts/Config";
+import { useExperiment } from "../../contexts/Experiment";
 import { openModal } from "../../common/utils/modalControl";
 import BluetoothModal from "../../components/BluetoothModal";
 import SerialModal from "../../components/SerialModal";
@@ -15,9 +16,11 @@ declare const window: ElectronWindow;
 export default function Connection() {
   const navigate = useNavigate();
   const { config } = useConfig();
+  const { experiment } = useExperiment();
   const [bluetoothAvailable, setBluetoothAvailable] = useState(false);
 
   useEffect(() => {
+    !experiment && navigate("/experiments");
     navigator.bluetooth.getAvailability().then((available) => {
       setBluetoothAvailable(available);
     });
