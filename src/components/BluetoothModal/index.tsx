@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { MdBluetooth } from "react-icons/md";
 import { toast } from "react-toastify";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
+import { CharacteristicEvent } from "../../interfaces/CharacteristicEvent";
+import { ElectronBluetoothDevice } from "../../types/ElectronBluetoothDevice";
+import { CONNECTION } from "../../enums/Connection";
+import { PREFIXES } from "../../enums/Prefixes";
+import { PREFIX_LENGTH } from "../../constants";
 import { useConfig } from "../../contexts/Config";
 import { useExperiment } from "../../contexts/Experiment";
-import { ElectronBluetoothDevice } from "../../types/ElectronBluetoothDevice";
 import { closeModal } from "../../common/utils/modalControl";
-import { CharacteristicEvent } from "../../interfaces/CharacteristicEvent";
-import { CONNECTION } from "../../enums/Connection";
 import Spinner from "../Spinner";
 
 import { CancelButton, List, ListItem } from "./styles";
@@ -16,8 +18,13 @@ declare const window: ElectronWindow;
 
 export default function BluetoothModal() {
   const { config } = useConfig();
-  const { connect, parseReading, handleReading, configureDisconnect } =
-    useExperiment();
+  const {
+    buffer,
+    connect,
+    updateTerminal,
+    handleReading,
+    configureDisconnect,
+  } = useExperiment();
   const [devices, setDevices] = useState<ElectronBluetoothDevice[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -53,7 +60,17 @@ export default function BluetoothModal() {
 
         const characteristicvaluechangedCallback = (e: Event) => {
           const event = e as CharacteristicEvent;
-          handleReading([parseReading(event.target.value)]);
+          buffer.add(event.target.value);
+          if (buffer.isFull()) {
+            const reading = buffer.value;
+            updateTerminal({ date: new Date(), reading });
+            if (reading.substring(0, PREFIX_LENGTH) === PREFIXES.SSD) {
+              const parsedReading: number[] = JSON.parse(
+                reading.substring(PREFIX_LENGTH)
+              );
+              handleReading(parsedReading);
+            }
+          }
         };
 
         characteristic.addEventListener(

@@ -3,11 +3,11 @@ import ReactDOM from "react-dom/client";
 import { ToastContainer } from "react-toastify";
 import { ExperimentProvider } from "./contexts/Experiment";
 import { ConfigProvider } from "./contexts/Config";
+import TitleBar from "./components/TitleBar";
 import AppRouter from "./routes";
 
 import "react-toastify/dist/ReactToastify.css";
 import { App, Window } from "./styles";
-import TitleBar from "./components/TitleBar";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
-import { useConfig } from "../Config";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { ExperimentContextData } from "../../types/ExperimentContextData";
-import { CONNECTION } from "../../enums/Connection";
 import { Reading } from "../../types/Reading";
 import { Experiment } from "../../types/Experiment";
 import { TerminalElement } from "../../types/TerminalElement";
+import { CONNECTION } from "../../enums/Connection";
+import { BLEBuffer } from "../../models/BLEBuffer";
+import { useConfig } from "../Config";
 
 declare const window: ElectronWindow;
 
@@ -62,14 +63,6 @@ export function ExperimentProvider({
 
   const updateTerminal = (reading: TerminalElement) => {
     setTerminal((terminal) => [...terminal, reading]);
-  };
-
-  const parseReading = (reading: DataView) => {
-    const is16Bits = reading.getUint8(0) & 0x1;
-    if (is16Bits) {
-      return reading.getUint16(1, true);
-    }
-    return reading.getUint8(1);
   };
 
   const handleReading = (reading: number[]) => {
@@ -141,13 +134,13 @@ export function ExperimentProvider({
         experiment,
         connection,
         deviceName,
+        buffer: new BLEBuffer(),
         preSave,
         terminal,
         readings,
         create,
         connect,
         updateTerminal,
-        parseReading,
         handleReading,
         handleWriting,
         configureDisconnect,
