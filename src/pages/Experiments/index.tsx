@@ -1,60 +1,80 @@
-import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdKeyboardReturn } from "react-icons/md";
-import { Experiment } from "../../types/Experiment";
-import { ContextMenu } from "../../types/ContextMenu";
-import { VIEW } from "../../enums/View";
+import { Button } from "primereact/button";
+import { ContextMenu } from "primereact/contextmenu";
+import { useDialogController } from "../../hooks/useDialogController";
+import { useContextMenuController } from "../../hooks/useContextMenuController";
+import { useExperiment } from "../../contexts/Experiment";
 import ExperimentsList from "../../components/ExperimentsList";
-import ExperimentContextMenu from "../../components/ExperimentContextMenu";
-import ExperimentModal from "../../components/ExperimentModal";
-import ExperimentDeleteModal from "../../components/ExperimentDeleteModal";
-
-import { BackButton, Container, Main, Title } from "./styles";
+import ExperimentDialog from "../../components/ExperimentDialog";
+import ExperimentDeleteDialog from "../../components/ExperimentDeleteDialog";
 
 export default function Experiments() {
   const navigate = useNavigate();
-  const ref = useRef<HTMLMenuElement | null>(null);
-  const [contextMenu, setContextMenu] = useState<ContextMenu | null>(null);
-  const handleContextMenu = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    view: VIEW,
-    experiment: Experiment
-  ) => {
-    event.preventDefault();
-    setContextMenu({
-      view,
-      experiment,
-      positioning: {
-        mouseY: event.clientY - 6,
-        mouseX: event.clientX + 2,
-      },
-    });
-  };
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      if (ref.current && event.target) {
-        if (!ref.current.contains(event.target as Node)) {
-          setContextMenu(null);
-        }
-      }
-    };
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
-  }, []);
+  const { copy, destroy } = useExperiment();
+  const defaultExperimentsContextMenu = useContextMenuController();
+  const userExperimentsContextMenu = useContextMenuController();
+  const experimentDialog = useDialogController();
+  const experimentDeleteDialog = useDialogController();
+
   return (
-    <Container>
-      <Main>
-        <BackButton onClick={() => navigate("/")}>
-          <MdKeyboardReturn size="2rem" />
-        </BackButton>
-        <Title>
-          <h1>Experiments</h1>
-        </Title>
-        <ExperimentsList handleContextMenu={handleContextMenu} />
-      </Main>
-      <ExperimentContextMenu reference={ref} contextMenu={contextMenu} />
-      <ExperimentModal />
-      <ExperimentDeleteModal />
-    </Container>
+    <div className="flex justify-content-center align-items-center w-full h-full p-6">
+      <div className="card flex flex-column align-items-center w-8 h-full">
+        <div className="flex justify-content-between align-items-center w-full mb-3">
+          <Button className="p-2" outlined onClick={() => navigate("/")}>
+            <i className="pi pi-arrow-left text-xl" />
+          </Button>
+          <h1 className="m-0">Experiments</h1>
+          <Button
+            className="p-2"
+            outlined
+            onClick={() => {
+              destroy();
+              experimentDialog.open();
+            }}
+          >
+            <i className="pi pi-plus text-xl" />
+          </Button>
+        </div>
+        <ExperimentsList
+          defaultExperimentsContextMenu={defaultExperimentsContextMenu}
+          userExperimentsContextMenu={userExperimentsContextMenu}
+        />
+      </div>
+      <ContextMenu
+        ref={defaultExperimentsContextMenu.ref}
+        model={[
+          {
+            label: "Copy",
+            icon: "pi pi-clone",
+            command: () => {
+              copy();
+              experimentDialog.open();
+            },
+          },
+          {
+            label: "Info",
+            icon: "pi pi-info-circle",
+            command: () => {},
+          },
+        ]}
+      />
+      <ContextMenu
+        ref={userExperimentsContextMenu.ref}
+        model={[
+          {
+            label: "Edit",
+            icon: "pi pi-pencil",
+            command: experimentDialog.open,
+          },
+          {
+            label: "Delete",
+            icon: "pi pi-trash",
+            command: experimentDeleteDialog.open,
+          },
+        ]}
+      />
+      <ExperimentDialog experimentDialog={experimentDialog} />
+      <ExperimentDeleteDialog experimentDeleteDialog={experimentDeleteDialog} />
+    </div>
   );
 }

@@ -1,35 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { TabPanel, TabView } from "primereact/tabview";
+import { ContextMenu } from "primereact/contextmenu";
 import { useExperiment } from "../../contexts/Experiment";
-import { useContextMenu } from "../../hooks/useContextMenu";
+import { useContextMenuController } from "../../hooks/useContextMenuController";
 import { ParsedData } from "../../types/ParsedData";
-import { VIEW } from "../../enums/View";
 import { schemeCategory10 } from "../../themes/SchemeCategory10";
 import LineChart from "../LineChart";
 import Terminal from "../Terminal";
-import ChartContextMenu from "../ChartContextMenu";
-
-import {
-  ChartWrapper,
-  Container,
-  Content,
-  InfoBlock,
-  InfoItem,
-  Infos,
-  InfosWrapper,
-  Option,
-  Options,
-  PlainVariable,
-  PlainWrapper,
-} from "./styles";
 
 export default function Main() {
   const { experiment, connection, deviceName, preSave, readings } =
     useExperiment();
-  const { ref, positioning, handleContextMenu } = useContextMenu();
   const startTime = Date.now();
   const [chartVariable, setChartVariable] = useState<string | null>(null);
-  const [dataView, setDataView] = useState<VIEW>(VIEW.PLAIN);
-  const [view, setView] = useState<VIEW>(VIEW.CONNECTION);
+  const chartContextMenu = useContextMenuController();
   const [clock, setClock] = useState<string>("");
   const updateTime = useCallback(() => {
     const milliseconds = Date.now() - startTime;
@@ -73,101 +57,86 @@ export default function Main() {
   }, [updateTime]);
 
   return (
-    <Container>
-      <Content>
-        <Options>
-          <Option
-            $selected={dataView === VIEW.PLAIN}
-            onClick={() => setDataView(VIEW.PLAIN)}
-          >
-            PLAIN
-          </Option>
-          <Option
-            $selected={dataView === VIEW.CHART}
-            onClick={() => experiment!.chart && setDataView(VIEW.CHART)}
-          >
-            CHART
-          </Option>
-        </Options>
-        <PlainWrapper
-          className={dataView !== VIEW.PLAIN ? "visually-hidden" : ""}
-        >
-          {parsedData.map(({ variable, reading }, index) => (
-            <PlainVariable key={`main-plain-variable-${index}`}>
-              <h3>{variable.name}:</h3>
-              <h4>{reading[reading.length - 1].y}</h4>
-              <p>{variable.unit}</p>
-            </PlainVariable>
-          ))}
-        </PlainWrapper>
-        <ChartWrapper
-          className={dataView !== VIEW.CHART ? "visually-hidden" : ""}
-          onContextMenu={handleContextMenu}
-        >
-          <LineChart
-            data={parsedData
-              .map(({ variable, reading }, index) => ({
-                id: `${variable.name}`,
-                data: reading,
-                color: schemeCategory10[index] || "#e2b8a5",
-              }))
-              .filter(({ id }) =>
-                chartVariable ? id === chartVariable : true
-              )}
-          />
-        </ChartWrapper>
-        <Options>
-          <Option
-            $selected={view === VIEW.CONNECTION}
-            onClick={() => setView(VIEW.CONNECTION)}
-          >
-            CONNECTION
-          </Option>
-          <Option
-            $selected={view === VIEW.TERMINAL}
-            onClick={() => experiment!.terminal && setView(VIEW.TERMINAL)}
-          >
-            TERMINAL
-          </Option>
-        </Options>
-        <Infos className={view !== VIEW.CONNECTION ? "visually-hidden" : ""}>
-          <InfosWrapper>
-            <InfoBlock>
-              <InfoItem>
-                <label>Dispositivo conectado</label>
-                <h2>{deviceName}</h2>
-              </InfoItem>
-              <InfoItem>
-                <label>Tipo de conexão</label>
-                <h2>{connection}</h2>
-              </InfoItem>
-            </InfoBlock>
-            <InfoBlock>
-              <InfoItem>
-                <label>Tempo de conexão</label>
-                <h2>{clock}</h2>
-              </InfoItem>
-              <InfoItem>
-                <label>Dados recebidos</label>
-                <h2>
-                  {preSave.reduce(
-                    (accumulator, currentValue) =>
-                      accumulator + currentValue.length,
-                    0
+    <div className="flex flex-column justify-content-evenly w-10 h-full p-3">
+      <div className="card m-0 p-3 h-30rem">
+        <TabView>
+          <TabPanel header="Plain">
+            <div className="flex justify-content-evenly align-items-center w-full h-22rem overflow-auto">
+              {parsedData.map(({ variable, reading }, index) => (
+                <div
+                  className="flex flex-column align-items-center"
+                  key={`main-plain-variable-${index}`}
+                >
+                  <h3>{variable.name}:</h3>
+                  <h4>{reading[reading.length - 1].y}</h4>
+                  <p>{variable.unit}</p>
+                </div>
+              ))}
+            </div>
+          </TabPanel>
+          <TabPanel header="Chart" disabled={!experiment!.chart}>
+            <div className="h-22rem">
+              <LineChart
+                data={parsedData
+                  .map(({ variable, reading }, index) => ({
+                    id: `${variable.name} (${variable.unit})`,
+                    data: reading,
+                    color: schemeCategory10[index] || "#ffffff",
+                  }))
+                  .filter(({ id }) =>
+                    chartVariable ? id === chartVariable : true
                   )}
-                </h2>
-              </InfoItem>
-            </InfoBlock>
-          </InfosWrapper>
-        </Infos>
-        <Terminal className={view !== VIEW.TERMINAL ? "visually-hidden" : ""} />
-      </Content>
-      <ChartContextMenu
-        reference={ref}
-        positioning={positioning}
-        parsedData={parsedData}
-        selectChartVariable={selectChartVariable}
+                chartContextMenu={chartContextMenu}
+              />
+            </div>
+          </TabPanel>
+          <TabPanel header="Terminal" disabled={!experiment!.terminal}>
+            <Terminal />
+          </TabPanel>
+        </TabView>
+      </div>
+      <div className="card p-3 h-13rem">
+        <div className="flex justify-content-evenly align-items-center h-full">
+          <div>
+            <span>Dispositivo conectado</span>
+            <h2>{deviceName}</h2>
+          </div>
+          <div>
+            <label>Tipo de conexão</label>
+            <h2>{connection}</h2>
+          </div>
+          <div>
+            <label>Tempo de conexão</label>
+            <h2>{clock}</h2>
+          </div>
+          <div>
+            <label>Dados recebidos</label>
+            <h2>
+              {preSave.reduce(
+                (accumulator, currentValue) =>
+                  accumulator + currentValue.length,
+                0
+              )}
+            </h2>
+          </div>
+        </div>
+      </div>
+      <ContextMenu
+        ref={chartContextMenu.ref}
+        model={[
+          ...parsedData.map(({ variable }) => ({
+            label: variable.name,
+            icon: "pi pi-wave-pulse",
+            command: () =>
+              selectChartVariable(`${variable.name} (${variable.unit})`),
+          })),
+          {
+            label: "All",
+            icon: "pi pi-hashtag",
+            command: () => selectChartVariable(null),
+          },
+        ]}
       />
-    </Container>
+    </div>
   );
 }

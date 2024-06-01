@@ -6,8 +6,6 @@ import { PREFIXES } from "../../enums/Prefixes";
 import Main from "../../components/Main";
 import Sidebar from "../../components/Sidebar";
 
-import { Container } from "./styles";
-
 declare const window: ElectronWindow;
 
 export default function Dashboard() {
@@ -30,9 +28,9 @@ export default function Dashboard() {
     };
   }, []);
   return (
-    <Container>
+    <div className="flex w-full h-full">
       <Sidebar />
       <Main />
-    </Container>
+    </div>
   );
 }

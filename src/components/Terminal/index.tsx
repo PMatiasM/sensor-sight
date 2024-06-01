@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { InputText } from "primereact/inputtext";
 import { useExperiment } from "../../contexts/Experiment";
 import TerminalElement from "../TerminalElement";
 
-import { Container, Input, Screen } from "./styles";
-
-export default function Terminal({ className }: { className: string }) {
+export default function Terminal() {
   const { terminal, handleWriting } = useExperiment();
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
   const [value, setValue] = useState<string>("");
@@ -20,8 +19,9 @@ export default function Terminal({ className }: { className: string }) {
     }
   }, [terminal]);
   return (
-    <Container className={className}>
-      <Screen
+    <div className="flex flex-column w-full h-22rem">
+      <div
+        className="card p-2 mb-0 border-noround-bottom overflow-auto w-full h-20rem"
         onScroll={(event) =>
           event.currentTarget.scrollHeight - event.currentTarget.scrollTop < 400
             ? setAutoScroll(true)
@@ -36,16 +36,16 @@ export default function Terminal({ className }: { className: string }) {
             reading={element.reading}
           />
         ))}
-      </Screen>
+      </div>
       <form onSubmit={handleSubmit}>
-        <Input
-          type="text"
+        <InputText
+          className="card border-noround-top	p-2 w-full"
+          placeholder="Message (Enter to send message)"
+          spellCheck={false}
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          spellCheck={false}
-          placeholder="Message (Enter to send message)"
         />
       </form>
-    </Container>
+    </div>
   );
 }

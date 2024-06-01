@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { toast } from "react-toastify";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { ExperimentContextData } from "../../types/ExperimentContextData";
 import { Reading } from "../../types/Reading";
@@ -8,6 +7,7 @@ import { Experiment } from "../../types/Experiment";
 import { TerminalElement } from "../../types/TerminalElement";
 import { CONNECTION } from "../../enums/Connection";
 import { BLEBuffer } from "../../models/BLEBuffer";
+import { useToast } from "../Toast";
 import { useConfig } from "../Config";
 
 declare const window: ElectronWindow;
@@ -21,6 +21,7 @@ export function ExperimentProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const toast = useToast();
   const { config } = useConfig();
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [connection, setConnection] = useState<CONNECTION | null>(null);
@@ -34,6 +35,15 @@ export function ExperimentProvider({
 
   const create = (data: Experiment) => {
     setExperiment(data);
+  };
+
+  const copy = () => {
+    setExperiment((experiment) => {
+      if (experiment) {
+        return { ...experiment, id: "" };
+      }
+      return null;
+    });
   };
 
   const connect = (type: CONNECTION, device: string) => {
@@ -139,6 +149,7 @@ export function ExperimentProvider({
         terminal,
         readings,
         create,
+        copy,
         connect,
         updateTerminal,
         handleReading,

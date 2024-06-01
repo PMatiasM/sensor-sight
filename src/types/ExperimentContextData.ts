@@ -13,6 +13,7 @@ export type ExperimentContextData = {
   terminal: TerminalElement[];
   readings: Reading[][];
   create: (data: Experiment) => void;
+  copy: () => void;
   connect: (type: CONNECTION, device: string) => void;
   updateTerminal: (reading: TerminalElement) => void;
   handleReading: (reading: number[]) => void;

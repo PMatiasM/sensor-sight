@@ -1,53 +1,126 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  MdOutlineAddCircleOutline,
-  MdOutlineCheck,
-  MdOutlineClear,
-} from "react-icons/md";
-import { VscTelescope } from "react-icons/vsc";
+import { TabPanel, TabView } from "primereact/tabview";
+import { DataView } from "primereact/dataview";
+import { Skeleton } from "primereact/skeleton";
 import { ElectronWindow } from "../../interfaces/ElectronWindow";
 import { useExperiment } from "../../contexts/Experiment";
 import { Experiment } from "../../types/Experiment";
-import { VIEW } from "../../enums/View";
-import { openModal } from "../../common/utils/modalControl";
-
-import {
-  AddButton,
-  Container,
-  Item,
-  ItemIcon,
-  ItemInfos,
-  ItemTitle,
-  List,
-  Option,
-  Toggle,
-} from "./styles";
+import { ContextMenuController } from "../../types/ContextMenuController";
 
 declare const window: ElectronWindow;
 
 export default function ExperimentsList({
-  handleContextMenu,
+  defaultExperimentsContextMenu,
+  userExperimentsContextMenu,
 }: {
-  handleContextMenu: (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    view: VIEW,
-    experiment: Experiment
-  ) => void;
+  defaultExperimentsContextMenu: ContextMenuController;
+  userExperimentsContextMenu: ContextMenuController;
 }) {
   const navigate = useNavigate();
   const { create } = useExperiment();
-  const [view, setView] = useState<VIEW>(VIEW.DEFAULT);
-  const [defaultExperiment, setDefaultExperiment] = useState<
-    Experiment[] | null
-  >(null);
-  const [userExperiment, setUserExperiment] = useState<Experiment[] | null>(
-    null
+  const [defaultExperiments, setDefaultExperiments] = useState<Experiment[]>(
+    []
   );
+  const [userExperiments, setUserExperiments] = useState<Experiment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const template = (
+    experiment: Experiment | null,
+    controller: ContextMenuController
+  ) => {
+    if (experiment && !loading) {
+      return (
+        <div
+          className="col-6 p-2"
+          key={`experiment-items-default-${experiment.id}`}
+        >
+          <div
+            className="card text-primary cursor-pointer p-2 hover:surface-hover"
+            onClick={() => {
+              create(experiment);
+              navigate("/connection");
+            }}
+            onContextMenu={(event) => {
+              create({ ...experiment });
+              controller.open(event);
+            }}
+          >
+            <div className="grid m-0">
+              <div className="col-9">
+                <div className="grid m-0">
+                  <div className="col-12">
+                    <h3 className="m-0">{experiment.name}</h3>
+                  </div>
+                  <div className="col-6">
+                    <span>Variables: {experiment.variables.length}</span>
+                  </div>
+                  <div className="col-6">
+                    <span>Chart: </span>
+                    <span>
+                      <i
+                        className={`pi ${
+                          experiment.chart ? "pi-check" : "pi-times"
+                        } text-sm`}
+                      />
+                    </span>
+                  </div>
+                  <div className="col-6">
+                    <span>Buttons: {experiment.buttons.length}</span>
+                  </div>
+                  <div className="col-6">
+                    <span>Terminal: </span>
+                    <span>
+                      <i
+                        className={`pi ${
+                          experiment.terminal ? "pi-check" : "pi-times"
+                        } text-sm`}
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="col-3 flex justify-content-center align-items-center">
+                <i className="pi pi-wave-pulse text-6xl" />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="col-6 p-2" key={new Date().toISOString()}>
+        <a className="card block cursor-pointer p-2">
+          <div className="grid m-0">
+            <div className="col-9">
+              <div className="grid m-0">
+                <div className="col-12">
+                  <h3 className="m-0">
+                    <Skeleton className="w-11rem border-round h-2rem" />
+                  </h3>
+                </div>
+                <div className="col-12">
+                  <Skeleton className="w-9rem border-round h-1rem" />
+                </div>
+                <div className="col-12">
+                  <Skeleton className="w-9rem border-round h-1rem" />
+                </div>
+              </div>
+            </div>
+            <div className="col-3 flex justify-content-center align-items-center">
+              <Skeleton shape="circle" className="w-3rem h-3rem" />
+            </div>
+          </div>
+        </a>
+      </div>
+    );
+  };
+
   useEffect(() => {
     window.electronAPI.experiment((_, defaultExperiment, userExperiment) => {
-      setDefaultExperiment([...defaultExperiment]);
-      setUserExperiment([...userExperiment]);
+      setDefaultExperiments([...defaultExperiment]);
+      setUserExperiments([...userExperiment]);
+      setLoading(false);
     });
     window.electronAPI.getExperiment();
     return () => {
@@ -55,108 +128,37 @@ export default function ExperimentsList({
     };
   }, []);
   return (
-    <Container>
-      <Toggle>
-        <Option
-          $selected={view === VIEW.DEFAULT}
-          onClick={() => setView(VIEW.DEFAULT)}
-        >
-          Default
-        </Option>
-        <Option
-          $selected={view === VIEW.CUSTOM}
-          onClick={() => setView(VIEW.CUSTOM)}
-        >
-          Custom
-        </Option>
-      </Toggle>
-      <List className={view !== VIEW.DEFAULT ? "visually-hidden" : ""}>
-        {defaultExperiment?.map((experiment, index) => (
-          <Item
-            key={`experiment-items-default-${index}`}
-            onContextMenu={(event) =>
-              handleContextMenu(event, view, { ...experiment })
+    <div className="w-full">
+      <TabView>
+        <TabPanel header="Deafult">
+          <DataView
+            className="max-h-30rem overflow-auto"
+            emptyMessage="No experiments found."
+            value={
+              loading
+                ? Array.from({ length: 6 }, () => null)
+                : defaultExperiments
             }
-            onClick={() => {
-              create(experiment);
-              navigate("/connection");
-            }}
-          >
-            <ItemTitle>
-              <h3>{experiment.name}</h3>
-              <ItemInfos>
-                <div>
-                  <p>Variables: {experiment.variables.length}</p>
-                  <p>Buttons: {experiment.buttons.length}</p>
-                </div>
-                <div>
-                  <p>
-                    Chart:{" "}
-                    {experiment.chart ? <MdOutlineCheck /> : <MdOutlineClear />}
-                  </p>
-                  <p>
-                    Terminal:{" "}
-                    {experiment.terminal ? (
-                      <MdOutlineCheck />
-                    ) : (
-                      <MdOutlineClear />
-                    )}
-                  </p>
-                </div>
-              </ItemInfos>
-            </ItemTitle>
-            <ItemIcon>
-              <VscTelescope size="4.5rem" />
-            </ItemIcon>
-          </Item>
-        ))}
-      </List>
-      <List className={view !== VIEW.CUSTOM ? "visually-hidden" : ""}>
-        {userExperiment?.map((experiment, index) => (
-          <Item
-            key={`experiment-items-custom-${index}`}
-            onContextMenu={(event) =>
-              handleContextMenu(event, view, { ...experiment })
+            itemTemplate={(experiment: Experiment | null) =>
+              template(experiment, defaultExperimentsContextMenu)
             }
-            onClick={() => {
-              create(experiment);
-              navigate("/connection");
-            }}
-          >
-            <ItemTitle>
-              <h3>{experiment.name}</h3>
-              <ItemInfos>
-                <div>
-                  <p>Variables: {experiment.variables.length}</p>
-                  <p>Buttons: {experiment.buttons.length}</p>
-                </div>
-                <div>
-                  <p>
-                    Chart:{" "}
-                    {experiment.chart ? <MdOutlineCheck /> : <MdOutlineClear />}
-                  </p>
-                  <p>
-                    Terminal:{" "}
-                    {experiment.terminal ? (
-                      <MdOutlineCheck />
-                    ) : (
-                      <MdOutlineClear />
-                    )}
-                  </p>
-                </div>
-              </ItemInfos>
-            </ItemTitle>
-            <ItemIcon>
-              <VscTelescope size="4.5rem" />
-            </ItemIcon>
-          </Item>
-        ))}
-        <Item onClick={() => openModal("experiment-modal")}>
-          <AddButton>
-            <MdOutlineAddCircleOutline size="4.5rem" />
-          </AddButton>
-        </Item>
-      </List>
-    </Container>
+            layout="grid"
+          />
+        </TabPanel>
+        <TabPanel header="Custom">
+          <DataView
+            className="max-h-30rem overflow-auto"
+            emptyMessage="No experiments found."
+            value={
+              loading ? Array.from({ length: 6 }, () => null) : userExperiments
+            }
+            itemTemplate={(experiment: Experiment | null) =>
+              template(experiment, userExperimentsContextMenu)
+            }
+            layout="grid"
+          />
+        </TabPanel>
+      </TabView>
+    </div>
   );
 }

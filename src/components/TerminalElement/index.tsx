@@ -1,8 +1,6 @@
 import { PREFIX_LENGTH } from "../../constants";
 import { PREFIXES } from "../../enums/Prefixes";
 
-import { Element } from "./styles";
-
 export default function TerminalElement({
   date,
   reading,
@@ -15,21 +13,25 @@ export default function TerminalElement({
   const parse = () => {
     switch (prefix) {
       case PREFIXES.SSD:
-        return { tag: "DATA", color: "#00b84c", text: parsedReading };
+        return { tag: "DATA", color: "text-green-600", text: parsedReading };
       case PREFIXES.SSL:
-        return { tag: "LOG", color: "#027df0", text: parsedReading };
+        return { tag: "LOG", color: "text-blue-600", text: parsedReading };
       case PREFIXES.SSW:
-        return { tag: "WARNING", color: "#f3f734", text: parsedReading };
+        return {
+          tag: "WARNING",
+          color: "text-yellow-600",
+          text: parsedReading,
+        };
       case PREFIXES.SSE:
-        return { tag: "ERROR", color: "#fc6b6b", text: parsedReading };
+        return { tag: "ERROR", color: "text-red-600", text: parsedReading };
       default:
-        return { tag: "RAW", color: "#ffffff", text: reading };
+        return { tag: "RAW", color: "text-color", text: reading };
     }
   };
   const { tag, color, text } = parse();
   return (
-    <Element $color={color}>{`[${new Date(
+    <span className={`block select-text	${color}`}>{`[${new Date(
       date
-    ).toLocaleTimeString()}] [${tag}] ${text}`}</Element>
+    ).toLocaleTimeString()}] [${tag}] ${text}`}</span>
   );
 }

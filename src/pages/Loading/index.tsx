@@ -1,11 +1,9 @@
-import Spinner from "../../components/Spinner";
-
-import { Container } from "./styles";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 export default function Loading() {
   return (
-    <Container>
-      <Spinner />
-    </Container>
+    <div className="flex justify-content-center align-items-center w-full h-full">
+      <ProgressSpinner />
+    </div>
   );
 }

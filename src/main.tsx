@@ -1,37 +1,32 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ToastContainer } from "react-toastify";
-import { ExperimentProvider } from "./contexts/Experiment";
+import { PrimeReactProvider } from "primereact/api";
+import { ToastProvider } from "./contexts/Toast";
 import { ConfigProvider } from "./contexts/Config";
+import { ExperimentProvider } from "./contexts/Experiment";
 import TitleBar from "./components/TitleBar";
 import AppRouter from "./routes";
 
-import "react-toastify/dist/ReactToastify.css";
-import { App, Window } from "./styles";
+import "primeicons/primeicons.css";
+import "primeflex/primeflex.css";
+import "primereact/resources/themes/lara-dark-indigo/theme.css";
+import "./styles/layout.scss";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ConfigProvider>
-      <ExperimentProvider>
-        <Window>
-          <TitleBar />
-          <App>
-            <AppRouter />
-          </App>
-        </Window>
-      </ExperimentProvider>
-    </ConfigProvider>
-    <ToastContainer
-      position="top-right"
-      autoClose={5000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="colored"
-    />
+    <PrimeReactProvider>
+      <ToastProvider>
+        <ConfigProvider>
+          <ExperimentProvider>
+            <div className="flex flex-column select-none h-screen">
+              <TitleBar />
+              <div className="flex flex-1 overflow-hidden	">
+                <AppRouter />
+              </div>
+            </div>
+          </ExperimentProvider>
+        </ConfigProvider>
+      </ToastProvider>
+    </PrimeReactProvider>
   </React.StrictMode>
 );
